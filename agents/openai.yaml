@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remember Anytime"
+  short_description: "Persist and enforce project rules from .remember_anytime."
+  default_prompt: "Use $remember-anytime to initialize or obey persistent project rules."
