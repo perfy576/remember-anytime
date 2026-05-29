@@ -1,16 +1,16 @@
 ---
 name: remember-anytime
-description: Persistently load, create, update, and enforce project rules stored in a `.remember_anytime` folder, and maintain an AGENT.md bridge so future agents know when to read those rules. Use when Codex works in a repository that has or should have durable agent instructions, coding standards, component usage rules, architectural constraints, build requirements, server/log/deployment runbooks, remote host information, platform-specific handling, web/mobile/desktop differences, project conventions, or user-defined rules that must survive context compaction; use when the user asks to inspect logs, use server information, deploy, debug remote behavior, code for web or multi-platform apps, remember something permanently, says future agents must always obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md instructions not being followed, "always remember", "from now on", persistent project rules, coding norms, component conventions, or project agreements.
+description: Persistently load, create, update, and enforce project rules and reusable workflows stored in `.remember_anytime`, and maintain an AGENT.md/AGENTS.md bridge. Use when a repository needs durable agent instructions, coding standards, component/API rules, architecture constraints, build/deploy/server runbooks, platform rules, or project conventions; use when the user asks to remember something permanently, solidify a repeatable process, save a workflow, make a prompt reusable, rerun a previous workflow, says future agents must obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md/AGENTS.md, "always remember", "from now on", "固化流程", or "以后用一句提示词".
 ---
 
 # Remember Anytime
 
-Use this skill to make user-defined project rules durable and re-loadable. The project source of truth is `.remember_anytime/` at the project root, normally with `rules.md` plus optional function-specific files.
+Use this skill to make user-defined project rules and repeatable workflows durable and re-loadable. The project source of truth is `.remember_anytime/` at the project root, normally with `rules.md`, optional function-specific files, and optional workflow files under `.remember_anytime/workflows/`.
 
 This skill improves automatic recognition in two ways:
 
 1. The skill description contains broad trigger terms for coding, logs, servers, deployment, multi-platform, web, UI, and permanent memory tasks.
-2. The scripts maintain a short `AGENT.md` bridge that tells future agents to read `.remember_anytime/` when those workflows appear.
+2. The scripts maintain a short `AGENT.md` or `AGENTS.md` bridge that tells future agents to read `.remember_anytime/` when those workflows appear.
 
 This is persistence, not conversation memory. When the user asks Codex to remember a rule permanently, write it to disk so a future agent can reload it after context compaction or in a new session.
 
@@ -19,10 +19,11 @@ This is persistence, not conversation memory. When the user asks Codex to rememb
 1. Resolve the project root before making changes. Prefer the current working directory unless the user names a project subdirectory.
 2. Look for `.remember_anytime/` at the project root. If it does not exist and the task is to initialize persistent rules, create it with `scripts/init_remember_anytime.py`.
 3. Read every Markdown file directly under `.remember_anytime/` before planning or editing project code.
-4. Treat these files as mandatory project constraints for the whole turn. Re-read them after context transitions, long pauses, or when resuming work.
-5. Before editing code, explicitly map the relevant rule(s) to the files or behavior being changed.
-6. If a user request conflicts with `.remember_anytime` rules, surface the conflict and ask for confirmation before proceeding.
-7. After editing code, run the validation required by `.remember_anytime` rules. If validation cannot run, report the reason.
+4. If the user asks to repeat, update, continue, or automate a named workflow, read matching Markdown files under `.remember_anytime/workflows/` before acting.
+5. Treat these files as mandatory project constraints for the whole turn. Re-read them after context transitions, long pauses, or when resuming work.
+6. Before editing code, explicitly map the relevant rule(s) to the files or behavior being changed.
+7. If a user request conflicts with `.remember_anytime` rules or workflows, surface the conflict and ask for confirmation before proceeding.
+8. After editing code, run the validation required by `.remember_anytime` rules. If validation cannot run, report the reason.
 
 ## Automatic Workflow Matching
 
@@ -32,6 +33,7 @@ When this skill is triggered, classify the user's task and search the loaded `.r
 - Coding tasks: if the user asks to edit, refactor, fix, add, remove, compile, test, or review code, load coding workflow, architecture, validation, and forbidden-pattern rules.
 - Platform tasks: if the project has web/mobile/desktop variants or the user mentions web, browser, Flutter web, mobile, desktop, Windows, macOS, Linux, Android, or iOS, load platform-specific rules and apply the relevant branch before editing.
 - UI/component tasks: if the user mentions UI, page, component, theme, style, layout, localization, copy, or interaction, load UI, component, theme, and l10n rules.
+- Repeatable workflow tasks: if the user asks to repeat a previous workflow, update a generated artifact from fresh data, sync a catalog, refresh a report, reuse a prompt, or says "固化流程"/"以后用一句提示词", search `.remember_anytime/workflows/` by filename, title, trigger phrases, and described outputs.
 
 If a `.remember_anytime` file contains server credentials or sensitive connection details, use them only to perform the requested operation. Do not quote secrets back to the user unless explicitly requested and necessary.
 
@@ -61,11 +63,36 @@ Use the helper script:
 python .\scripts\remember_rule.py --project <project-root> --rule "<rule text>" --section "Coding Standards"
 ```
 
-By default, this also creates or updates the project `AGENT.md` bridge. Use `--no-agent` only when the user explicitly does not want `AGENT.md` touched.
+By default, this also creates or updates the project `AGENT.md` or `AGENTS.md` bridge. Use `--no-agent` only when the user explicitly does not want the bridge touched.
 
 If the rule is ambiguous, ask one concise clarification before saving it. If the target project is ambiguous, use the current working directory.
 
 After saving, tell the user which file changed and summarize the exact rule that was persisted.
+
+## Remembering Reusable Workflows
+
+When the user asks to solidify a process, make a prompt reusable, or ensure a future agent can repeat a completed workflow, save a workflow file under `.remember_anytime/workflows/`.
+
+Save workflows for repeatable procedures, not one-off observations. Good candidates include browser automation procedures, data refreshes, report generation, AI-assisted content pipelines, deployment runbooks, import/export tasks, and artifact update flows.
+
+Use the helper script:
+
+```powershell
+python .\scripts\remember_workflow.py --project <project-root> --slug <workflow-slug> --title "<workflow title>" --trigger "<trigger phrase>" --body-file <workflow.md>
+```
+
+Workflow files should be concise and executable by a future agent without conversation context. Prefer this shape:
+
+- `# <Workflow Title>`
+- `## Trigger Phrases`: user phrases that should load this workflow.
+- `## Scope`: what the workflow owns and what it must not change.
+- `## Inputs`: required paths, browser ports, URLs, credentials assumptions, or source files.
+- `## Procedure`: concrete steps in order, including tools and commands when stable.
+- `## Output Contract`: exact output files, layout, naming, sorting, and merge/dedupe rules.
+- `## Validation`: checks to run before responding.
+- `## Safety Notes`: permissions, destructive actions to avoid, account/session caveats.
+
+When updating an existing workflow, preserve stable trigger phrases and output contracts unless the user explicitly changes them.
 
 ## Initialization
 
@@ -86,7 +113,7 @@ Useful options:
 - `--append`: append migrated rules to an existing `.remember_anytime/rules.md`.
 - `--overwrite`: replace an existing `.remember_anytime/rules.md`.
 - `--title`: set the heading in the generated rules file.
-- `--no-agent`: do not create or update the `AGENT.md` bridge.
+- `--no-agent`: do not create or update the `AGENT.md` or `AGENTS.md` bridge.
 
 ## Rule File Shape
 
@@ -109,10 +136,11 @@ For better automatic matching, split durable knowledge by function when it grows
 - `.remember_anytime/server.md`: server hosts, log locations, SSH/deploy commands, and operational safety rules.
 - `.remember_anytime/platforms.md`: web/mobile/desktop differences and platform-specific coding requirements.
 - `.remember_anytime/ui.md`: component, theme, localization, and interaction rules.
+- `.remember_anytime/workflows/<slug>.md`: repeatable workflow instructions loaded only when the task matches their trigger phrases.
 
 ## Enforcement Notes
 
-- Do not assume `AGENT.md`, `agent.md`, or similar files will always be enough. Use it as a short bridge into `.remember_anytime/`, not as the long-term source of truth.
+- Do not assume `AGENT.md`, `AGENTS.md`, `agent.md`, or similar files will always be enough. Use it as a short bridge into `.remember_anytime/`, not as the long-term source of truth.
 - Do not bury critical rules in conversation summaries. The durable copy belongs in `.remember_anytime/`.
 - Do not rely on having seen the rule earlier in the same conversation. Re-read `.remember_anytime/` whenever this skill is invoked for a project task.
 - When changing persistent rules, edit `.remember_anytime/` directly and keep the rule wording precise enough that a future agent can apply it without context from the original conversation.

@@ -25,7 +25,7 @@ AGENT_BRIDGE_END = "<!-- remember-anytime:end -->"
 AGENT_BRIDGE = f"""{AGENT_BRIDGE_START}
 ## Remember Anytime
 
-Before working in this project, read `.remember_anytime/` if it exists. Treat its Markdown files as durable project rules that survive context compaction.
+Before working in this project, read `.remember_anytime/` if it exists. Treat its Markdown files as durable project rules and reusable workflows that survive context compaction.
 
 Automatic routing:
 
@@ -33,7 +33,9 @@ Automatic routing:
 - For server, log, deploy, SSH, production, or remote-debugging tasks, read `.remember_anytime/server.md` if present.
 - For web, browser, Flutter web, mobile, desktop, Windows, macOS, Linux, Android, iOS, or multi-platform tasks, read `.remember_anytime/platforms.md` if present.
 - For UI, component, theme, style, localization, copy, or interaction tasks, read `.remember_anytime/ui.md` if present.
+- For repeatable workflow tasks, refreshes, report updates, browser automation, catalog syncs, or "run this previous process again" requests, search and read matching `.remember_anytime/workflows/*.md` files.
 - When the user asks to remember a permanent rule, write it to `.remember_anytime/rules.md` instead of only acknowledging it in chat.
+- When the user asks to solidify a repeatable process, write it to `.remember_anytime/workflows/<slug>.md`.
 {AGENT_BRIDGE_END}
 """
 
@@ -73,7 +75,7 @@ def append_to_section(content: str, section: str, rule: str) -> str:
 
 
 def sync_agent_bridge(project: Path) -> Path:
-    agent_path = project / "AGENT.md"
+    agent_path = choose_agent_bridge(project)
     if agent_path.exists():
         content = read_text(agent_path)
     else:
@@ -91,6 +93,16 @@ def sync_agent_bridge(project: Path) -> Path:
 
     agent_path.write_text(updated.rstrip() + "\n", encoding="utf-8")
     return agent_path
+
+
+def choose_agent_bridge(project: Path) -> Path:
+    agents_path = project / "AGENTS.md"
+    agent_path = project / "AGENT.md"
+    if agents_path.exists():
+        return agents_path
+    if agent_path.exists():
+        return agent_path
+    return agents_path
 
 
 def main() -> int:
