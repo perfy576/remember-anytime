@@ -1,4 +1,4 @@
 interface:
   display_name: "Remember Anytime"
-  short_description: "Persist and enforce project rules and reusable workflows."
-  default_prompt: "Use $remember-anytime to initialize, obey, or solidify persistent project workflows."
+  short_description: "Persist project rules, secrets, and reusable workflows."
+  default_prompt: "Use $remember-anytime to initialize, obey, or solidify persistent project memory."

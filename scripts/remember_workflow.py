@@ -37,6 +37,7 @@ Automatic routing:
 - For UI, component, theme, style, localization, copy, or interaction tasks, read `.remember_anytime/ui.md` if present.
 - For repeatable workflow tasks, refreshes, report updates, browser automation, catalog syncs, "使用/执行/运行 X 流程", or "run this previous process again" requests, search and read matching `.remember_anytime/workflows/*.md` files, then follow their Procedure and Validation sections.
 - When the user asks to remember a permanent rule, write it to `.remember_anytime/rules.md` instead of only acknowledging it in chat.
+- When the user explicitly asks to remember a key, password, username, token, credential, host login, or other secret, write it to `.remember_anytime/secrets.md` and do not quote secret values back unless explicitly requested.
 - When the user asks "固化 X 流程" or asks to solidify a repeatable process, write it to `.remember_anytime/workflows/<slug>.md`.
 {AGENT_BRIDGE_END}
 """

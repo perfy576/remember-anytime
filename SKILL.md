@@ -1,6 +1,6 @@
 ---
 name: remember-anytime
-description: Persistently load, create, update, and enforce project rules and reusable workflows stored in `.remember_anytime`, and maintain an AGENT.md/AGENTS.md bridge. Use when a repository needs durable agent instructions, coding standards, component/API rules, architecture constraints, build/deploy/server runbooks, platform rules, or project conventions; use when the user asks to remember something permanently, solidify a repeatable process, save a workflow, make a prompt reusable, use/run a saved workflow, says future agents must obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md/AGENTS.md, "always remember", "from now on", "固化xx流程", "使用xx流程", "执行xx流程", or "以后用一句提示词".
+description: Persistently load, create, update, and enforce project rules, secrets, credentials, and reusable workflows stored in `.remember_anytime`, and maintain an AGENT.md/AGENTS.md bridge. Use when a repository needs durable agent instructions, coding standards, component/API rules, architecture constraints, build/deploy/server runbooks, platform rules, project conventions, remembered API keys/passwords/usernames, or workflows; use when the user asks to remember something permanently, solidify a repeatable process, save/use/run a workflow, says future agents must obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md/AGENTS.md, "always remember", "from now on", "固化xx流程", "使用xx流程", or "执行xx流程".
 ---
 
 # Remember Anytime
@@ -68,7 +68,7 @@ Trigger phrases include:
 
 Do not only acknowledge the instruction in chat. Persist it to disk unless the user explicitly says not to modify files.
 
-Save only stable, reusable rules. Do not persist one-off task details, temporary debugging observations, secrets, credentials, or instructions that are clearly limited to the current turn.
+Save only stable, reusable rules. Do not persist one-off task details, temporary debugging observations, or instructions that are clearly limited to the current turn.
 
 Use the helper script:
 
@@ -81,6 +81,24 @@ By default, this also creates or updates the project `AGENT.md` or `AGENTS.md` b
 If the rule is ambiguous, ask one concise clarification before saving it. If the target project is ambiguous, use the current working directory.
 
 After saving, tell the user which file changed and summarize the exact rule that was persisted.
+
+## Remembering Sensitive Information
+
+When the user explicitly asks to remember a key, password, username, token, credential, host login, or other secret, persist it. Do not refuse solely because it is sensitive.
+
+Use a dedicated secret file instead of ordinary rules:
+
+```powershell
+python .\scripts\remember_secret.py --project <project-root> --name "<secret name>" --value-stdin
+```
+
+Default storage is `.remember_anytime/secrets.md`. Treat that file as sensitive operational memory:
+
+- Use saved secrets only to perform the requested operation.
+- Do not quote secret values back to the user unless explicitly requested and necessary.
+- Prefer `--value-stdin` over command-line `--value` to avoid shell history leaks.
+- If the user asks for shared/team/committed credentials, save them as requested. Otherwise, recommend keeping `.remember_anytime/secrets.md` local or ignored by git.
+- If a project already has a preferred secret store, record a pointer or retrieval instruction in `.remember_anytime/secrets.md`.
 
 ## Remembering Reusable Workflows
 
@@ -149,6 +167,7 @@ For better automatic matching, split durable knowledge by function when it grows
 - `.remember_anytime/server.md`: server hosts, log locations, SSH/deploy commands, and operational safety rules.
 - `.remember_anytime/platforms.md`: web/mobile/desktop differences and platform-specific coding requirements.
 - `.remember_anytime/ui.md`: component, theme, localization, and interaction rules.
+- `.remember_anytime/secrets.md`: user-approved keys, passwords, usernames, tokens, credentials, or retrieval instructions.
 - `.remember_anytime/workflows/<slug>.md`: repeatable workflow instructions loaded only when the task matches their trigger phrases.
 
 ## Enforcement Notes
