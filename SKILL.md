@@ -43,6 +43,11 @@ Treat workflow prompts as direct actions:
 - `使用 X 流程`, `执行 X 流程`, `运行 X 流程`, `按 X 流程来`, `use/run X workflow`: search `.remember_anytime/workflows/` and `rules.md` workflow index for `X`, load the best match, then execute its Procedure and Validation sections.
 - If multiple workflows match, list the matching workflow names and ask the user to choose. If none match, say no saved workflow was found and offer to solidify one.
 
+## Built-In Workflows
+
+- `doublecheck`: re-audit the task from the full conversation history and current workspace state, ignore prior assumptions, and look for missing requirements, incorrect file targets, weak evidence, skipped validation, or inconsistent output. Read `references/builtin-workflows.md` for the execution pattern.
+- `固化 X 流程` / `使用 X 流程`: treat these as workflow-management commands, not ordinary edits; use the workflow save/run routing above.
+
 If a `.remember_anytime` file contains server credentials or sensitive connection details, use them only to perform the requested operation. Do not quote secrets back to the user unless explicitly requested and necessary.
 
 ## Remembering New Rules
