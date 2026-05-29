@@ -1,6 +1,6 @@
 ---
 name: remember-anytime
-description: Persistently load, create, update, and enforce project rules and reusable workflows stored in `.remember_anytime`, and maintain an AGENT.md/AGENTS.md bridge. Use when a repository needs durable agent instructions, coding standards, component/API rules, architecture constraints, build/deploy/server runbooks, platform rules, or project conventions; use when the user asks to remember something permanently, solidify a repeatable process, save a workflow, make a prompt reusable, rerun a previous workflow, says future agents must obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md/AGENTS.md, "always remember", "from now on", "固化流程", or "以后用一句提示词".
+description: Persistently load, create, update, and enforce project rules and reusable workflows stored in `.remember_anytime`, and maintain an AGENT.md/AGENTS.md bridge. Use when a repository needs durable agent instructions, coding standards, component/API rules, architecture constraints, build/deploy/server runbooks, platform rules, or project conventions; use when the user asks to remember something permanently, solidify a repeatable process, save a workflow, make a prompt reusable, use/run a saved workflow, says future agents must obey a rule, mentions remember_anytime, `.remember_anytime`, AGENT.md/AGENTS.md, "always remember", "from now on", "固化xx流程", "使用xx流程", "执行xx流程", or "以后用一句提示词".
 ---
 
 # Remember Anytime
@@ -34,6 +34,14 @@ When this skill is triggered, classify the user's task and search the loaded `.r
 - Platform tasks: if the project has web/mobile/desktop variants or the user mentions web, browser, Flutter web, mobile, desktop, Windows, macOS, Linux, Android, or iOS, load platform-specific rules and apply the relevant branch before editing.
 - UI/component tasks: if the user mentions UI, page, component, theme, style, layout, localization, copy, or interaction, load UI, component, theme, and l10n rules.
 - Repeatable workflow tasks: if the user asks to repeat a previous workflow, update a generated artifact from fresh data, sync a catalog, refresh a report, reuse a prompt, or says "固化流程"/"以后用一句提示词", search `.remember_anytime/workflows/` by filename, title, trigger phrases, and described outputs.
+
+## Prompt Intent Routing
+
+Treat workflow prompts as direct actions:
+
+- `固化 X 流程`, `把 X 流程固化下来`, `记住 X 流程`, `save X workflow`: create or update `.remember_anytime/workflows/<x>.md`. If the process is underspecified, ask one concise clarification or save a template with known facts and TODOs.
+- `使用 X 流程`, `执行 X 流程`, `运行 X 流程`, `按 X 流程来`, `use/run X workflow`: search `.remember_anytime/workflows/` and `rules.md` workflow index for `X`, load the best match, then execute its Procedure and Validation sections.
+- If multiple workflows match, list the matching workflow names and ask the user to choose. If none match, say no saved workflow was found and offer to solidify one.
 
 If a `.remember_anytime` file contains server credentials or sensitive connection details, use them only to perform the requested operation. Do not quote secrets back to the user unless explicitly requested and necessary.
 

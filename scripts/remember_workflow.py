@@ -35,9 +35,9 @@ Automatic routing:
 - For server, log, deploy, SSH, production, or remote-debugging tasks, read `.remember_anytime/server.md` if present.
 - For web, browser, Flutter web, mobile, desktop, Windows, macOS, Linux, Android, iOS, or multi-platform tasks, read `.remember_anytime/platforms.md` if present.
 - For UI, component, theme, style, localization, copy, or interaction tasks, read `.remember_anytime/ui.md` if present.
-- For repeatable workflow tasks, refreshes, report updates, browser automation, catalog syncs, or "run this previous process again" requests, search and read matching `.remember_anytime/workflows/*.md` files.
+- For repeatable workflow tasks, refreshes, report updates, browser automation, catalog syncs, "使用/执行/运行 X 流程", or "run this previous process again" requests, search and read matching `.remember_anytime/workflows/*.md` files, then follow their Procedure and Validation sections.
 - When the user asks to remember a permanent rule, write it to `.remember_anytime/rules.md` instead of only acknowledging it in chat.
-- When the user asks to solidify a repeatable process, write it to `.remember_anytime/workflows/<slug>.md`.
+- When the user asks "固化 X 流程" or asks to solidify a repeatable process, write it to `.remember_anytime/workflows/<slug>.md`.
 {AGENT_BRIDGE_END}
 """
 
